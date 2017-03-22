@@ -1,0 +1,5 @@
+read x,  	x := 0.19293123;
+while true do	x := x + 1.1;
+y := 0.9; 
+if x >= y then z := 1.10 else z := 3,,,,
+write z;;;;;
