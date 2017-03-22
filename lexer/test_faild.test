@@ -1,0 +1,4 @@
+whil true;
+x = 1;
+if x<= y then z:= 1;
+els x = 1;
