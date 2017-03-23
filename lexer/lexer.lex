@@ -5,7 +5,7 @@
 size_t position = 0;
 size_t line_num = 0;
 
-void colon();
+void colon(const char * t);
 void token(char const * token_type);
 void end_position();
 
@@ -16,22 +16,36 @@ void end_position();
 KW "do"|"while"|"skip"|"read"|"write"|"if"|"then"|"else"
 OP \+|-|\*|\/|%|==|!=|<|<=|>|>=|&&|\|\|
 BOOL      "true"|"false"
-VAR  [\_a-zA-Z][a-zA-Z0-9]* 
-RATIONAL    [0-9]+[.][0-9]*|[0-9]+
+VAR  [\_a-zA-Z][\_a-zA-Z0-9]* 
+int 		\-?(0|[1-9][0-9]*(e[\+\-]?[0-9]*)?)
+double_1  	\-?(0|([1-9][0-9]*))\.[0-9]*(e[\+\-]?[0-9]*)?
+double_2  	\-?\.[0-9]+(e[\+\-]?[0-9]*)?
+RATIONAL    ({int}|{double_1}|{double_2})
 ASSIGN    :=
 SPACE     [ ]
 NEW_LINE  \n
 TAB       \t
-COLON [,|, |;]
+COLON [\(|\)|;]
+COMMENT  \/\/.*$
 UNKNOWN   .
 
 %%
 
 {KW} {
 	token("kw");
+
 	position += strlen(yytext) - 1;
 	end_position();
 	position++;
+}
+
+{COMMENT} {
+	token("comment");
+	position += strlen(&yytext[2]) - 1;
+	++line_num;
+	end_position();
+	position = 1;
+
 }
 
 {OP} {
@@ -83,10 +97,11 @@ UNKNOWN   .
 }
 
 {COLON}  {
-	colon();
+	colon(yytext);
 	end_position();
 	++position;
 }
+
 
 {UNKNOWN} {
 	token("unknown");
@@ -106,8 +121,8 @@ void end_position() {
 	std::cout<< position << " )" << std::endl;
 }
 
-void colon() {
-	std::cout << "colon" ;
+void colon(const char * t) {
+	std::cout << "colon " << t ;
 	begin_position();
 }
 

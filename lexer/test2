@@ -1,0 +1,6 @@
+// inf loop
+while ( true ) do
+x := 1;
+z := x / y ;
+y := 1.e5 ;;;;
+
