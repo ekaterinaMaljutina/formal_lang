@@ -9,6 +9,7 @@
 - Cвой тест: 
 	- make
 	- cat test | ./lexer
+	- cat test | ./lexer -f или cat test | ./lexer -filter - без вывода комментариев 
 
 **Очистка**:
 - make clean

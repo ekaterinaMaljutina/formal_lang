@@ -1,6 +1,17 @@
 // inf loop
 while ( true ) do
 x := 1;
+(* this 
+is 
+multi
+
+lines 
+comment 
+
+*)
+y := x * x;	
+x := 3 ** 3;
+y := x * 1;	
 z := x / y ;
 y := 1.e5 ;;;;
 
