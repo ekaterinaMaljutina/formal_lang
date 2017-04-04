@@ -1,0 +1,14 @@
+read (x);
+x := 0;
+x := x + 1	;
+if (x >= y) then z := (1 + 2) else z := (3 - 4);
+if (x >= y) then begin z := (1 + 2); z := (1 + 2) end else z := (3 - 4);
+if (x >= y) then z := (1 + 2) else begin z := (3 - 4); z := (3 - 4) end ;
+while (x < 10) do begin x := (x + 1); x  :=  (x+1) end;
+while (x < 10) do  x  :=  (x+1) ;
+y := 9;
+write (z);
+skip;
+skip; p := (1 + (5 * 3));
+skip; skip;
+w := p

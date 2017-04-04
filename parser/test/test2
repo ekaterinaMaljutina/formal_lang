@@ -1,0 +1,9 @@
+// comment
+read (x);
+(*
+multi 
+	line 
+		comment
+*)
+x := 0;
+y := 9
