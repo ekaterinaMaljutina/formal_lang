@@ -16,11 +16,6 @@ extern int yylex(void);
 
 extern std::unique_ptr<tree_node> root;
 
-int yywrap()
-{
-    return 1;
-}
-
 void yyerror(const char* message) {
 	std::cerr << "Parse error! " << 
 	"Message: " << message << std::endl;
@@ -206,8 +201,7 @@ expr:
 		$$->add_child($2);
 		$$->add_child($4);
 		delete[] $3;
-	}
-	;
+	};
 
 
 statement:
@@ -304,7 +298,7 @@ statement_term:
 		delete[] $4;
 		delete[] $6;
 	}
-	|
+	/*|
 	WHILE expr DO statement
 	{
 		$$ = new tree_node(std::string($1) + " " + $3);
@@ -312,6 +306,6 @@ statement_term:
 		$$->add_child($4);
 		delete[] $1;
 		delete[] $3;
-	};
+	}*/;
 
 %%

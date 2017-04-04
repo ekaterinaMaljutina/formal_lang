@@ -1,5 +1,4 @@
 
-
 all: lex yacс
 	g++ -std=c++11  \
 	bin/lexer.cpp bin/parser.cpp src/main.cpp -o bin/parser

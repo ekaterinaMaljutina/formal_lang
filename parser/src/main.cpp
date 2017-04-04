@@ -4,30 +4,24 @@ extern int yyparse(void);
 extern FILE* yyin;
 std::unique_ptr<tree_node> root;
 
-const char* AST_FILENAME = "tree.dot";
-char const * AST_FILE_HEADER =
+const char* name = "tree.dot";
+char const * header =
         "digraph AST {\n"
-        "\trankdir=TB;\n"
-        "size=\"6,5\"\n"
+        "size=\"7\"\n"
         "node [shape = box];\n";
-char const * AST_FILE_FOOTER = "}\n";
-
-void usage(const char* filename) {
-    std::cerr << "Usage: " << std::endl << "\t" << filename 
-    << " <input-file>" << std::endl;
-}
+char const * end = "}\n";
 
 int main(int argc, char* argv[])
 {
     if (argc != 2) {
-        usage(argv[0]);
+        std::cout<<"input file name"<<std::endl;
         return 1;
     }
 
     yyin = fopen(argv[1], "r");
     yyparse();
-    std::ofstream tree_file(AST_FILENAME);
-    tree_file << AST_FILE_HEADER;
+    std::ofstream tree_file(name);
+    tree_file << header;
     root->serialize(tree_file);
-    tree_file << AST_FILE_FOOTER;
+    tree_file << end;
 } 
