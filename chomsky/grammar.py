@@ -235,26 +235,28 @@ class CYK:
     def __init__(self, grammar, words):
         self.__grammar__ = grammar
         self.words = words
+        self.size = len(words)
+        self.result = [[[] for i in range(self.size)] for j in range(self.size)]
+        self.non_terminate = list({l for (l, r) in grammar.get_rules()})
+
+        for i, word in enumerate(self.words):
+            for non_terminate in self.non_terminate:
+                rule = (non_terminate, (term_str(value=word, terminate=True),))
+                if rule in grammar.get_rules():
+                    self.result[i][i].append(non_terminate)
 
     def fit(self):
         from itertools import product
-        non_terminal_list = list({l for (l, r) in grammar.get_rules()})
-        size = len(self.words)
-        result = [[[] for i in range(size)] for j in range(size)]
-        for i, word in enumerate(self.words):
-            for alpha in non_terminal_list:
-                rule = (alpha, (term_str(value=word, terminate=True),))
-                if rule in grammar.get_rules():
-                    result[i][i].append(alpha)
-        for k in range(1, size + 1):
-            for i in range(size - k):
+        for k in range(1, self.size + 1):
+            for i in range(self.size - k):
                 for j in range(i, i + k):
-                    for (item_1, item_2) in product(result[i][j], result[j + 1][i + k]):
-                        for l in non_terminal_list:
+                    for (item_1, item_2) in product(self.result[i][j], self.result[j + 1][i + k]):
+                        for l in self.non_terminate:
                             currect_rule = (l, (item_1, item_2))
                             if currect_rule in grammar.get_rules():
-                                result[i][i + k].append(l)
-        return grammar.get_start_symbol() in result[0][size - 1], result
+                                self.result[i][i + k].append(l)
+        return grammar.get_start_symbol() in self.result[0][self.size - 1], \
+               [[list(map(str, it)) for it in row] for row in self.result]
 
 
 class parse_input_file:
@@ -336,5 +338,4 @@ if __name__ == '__main__':
 
             with open("result_table.csv", 'w') as f:
                 writer = csv.writer(f)
-                table = [[list(map(str, it)) for it in row] for row in table]
                 writer.writerows(table)
