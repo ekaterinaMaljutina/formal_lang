@@ -333,12 +333,12 @@ if __name__ == '__main__':
 
         file_with_words = args_value.cyk_w
         with open(file_with_words, 'r') as file_words:
-            words = file_words.read()
+            words = file_words.read().strip()
             cyk = CYK(grammar=grammar, words=words)
             res, table = cyk.fit()
             print("{} {}".format(words, res))
 
-            with open("%s.csv" % file_with_grammar, 'w') as f:
+            with open("%s.csv" % file_with_words, 'w') as f:
                 writer = csv.writer(f)
                 if table is None:
                     print("epsilon word in grammar")
