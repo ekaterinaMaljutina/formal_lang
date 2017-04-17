@@ -58,6 +58,7 @@ void yyerror(const char* message) {
 %type <node> expr_term
 %type <node> expr
 %type <node> statement_term
+%type <node> statement_one_line
 
 %left OP_5
 %left OP_4
@@ -203,6 +204,20 @@ expr:
 		delete[] $3;
 	};
 
+statement_one_line:
+	statement_term
+	{
+		$$ = $1;
+	}
+	|
+	statement SEMICOLON 	
+	{
+		std::cout<<std::string($2)<<std::endl;
+		$$ = new tree_node(std::string($2));
+		$$->add_child($1);
+		delete[] $2;
+	};
+
 
 statement:
 	statement_term
@@ -254,7 +269,7 @@ statement_term:
 		delete[] $1;
 	}
 	|
-	IF expr THEN statement ELSE BEGIN_ statement END
+	IF expr THEN statement_one_line ELSE BEGIN_ statement END
 	{
 		std::stringstream ss;
 		ss << $1 << " " << $3 << " " << $5 << " " << $6 <<std::endl;
@@ -265,7 +280,18 @@ statement_term:
 		delete[] $1; delete[] $3; delete[] $5;delete[] $6;
 	}
 	|
-	IF expr THEN BEGIN_ statement END ELSE statement 
+	IF expr THEN BEGIN_ statement END ELSE BEGIN_ statement END 
+	{
+		std::stringstream ss;
+		ss << $1 << " " << $3 << " " << $4 << " " << $6 << " " << $7<<std::endl;
+		$$ = new tree_node(ss.str());
+		$$->add_child($2);
+		$$->add_child($5);
+		$$->add_child($9);
+		delete[] $1; delete[] $3; delete[] $4;delete[] $6; delete[] $7; delete[] $8; delete[] $10;
+	}
+	|
+	IF expr THEN BEGIN_ statement END ELSE statement_one_line 
 	{
 		std::stringstream ss;
 		ss << $1 << " " << $3 << " " << $4 << " " << $6 << " " << $7<<std::endl;
@@ -276,7 +302,7 @@ statement_term:
 		delete[] $1; delete[] $3; delete[] $4;delete[] $6; delete[] $7;
 	}
 	|
-	IF expr THEN statement ELSE statement 
+	IF expr THEN statement_one_line ELSE statement_one_line 
 	{
 		std::stringstream ss;
 		std::cout << $1 << " " << $3 << " " << $5 <<std::endl;
@@ -293,19 +319,15 @@ statement_term:
 		$$ = new tree_node(std::string($1) + " " + $3 + " " + $4 + " " + $6);
 		$$->add_child($2);
 		$$->add_child($5);
-		delete[] $1;
-		delete[] $3;
-		delete[] $4;
-		delete[] $6;
+		delete[] $1; delete[] $3; delete[] $4; delete[] $6;
 	}
-	/*|
-	WHILE expr DO statement
+	|
+	WHILE expr DO statement_one_line 
 	{
 		$$ = new tree_node(std::string($1) + " " + $3);
 		$$->add_child($2);
 		$$->add_child($4);
-		delete[] $1;
-		delete[] $3;
-	}*/;
+		delete[] $1; delete[] $3;
+	};
 
 %%

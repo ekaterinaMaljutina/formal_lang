@@ -11,6 +11,7 @@ char const * header =
         "node [shape = box];\n";
 char const * end = "}\n";
 
+
 int main(int argc, char* argv[])
 {
     if (argc != 2) {
@@ -18,6 +19,14 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    FILE* file = fopen(argv[1], "r");
+    fseek(file, 0, SEEK_END);
+    unsigned long len = (unsigned long)ftell(file);
+    if (len == 0) { 
+        fclose(file);   
+        return 0;  
+    }
+    fclose(file);
     yyin = fopen(argv[1], "r");
     yyparse();
     std::ofstream tree_file(name);

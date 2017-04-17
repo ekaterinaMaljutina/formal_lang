@@ -1,0 +1,15 @@
+read (n);
+if (n <= 0)
+then 
+  begin 
+	skip; 
+	skip
+  end
+else 
+  begin 
+    res := 1;
+    i := 1;
+    while (i <= n) do
+      res := res * i;
+    i := i + 1
+  end
