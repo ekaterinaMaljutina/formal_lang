@@ -246,6 +246,10 @@ class CYK:
                     self.result[i][i].append(non_terminate)
 
     def fit(self):
+        if len(self.words) == 0:
+            return (grammar.get_start_symbol(), (grammar.eps_value,)) in grammar.get_rules(),\
+                   None
+
         from itertools import product
         for k in range(1, self.size + 1):
             for i in range(self.size - k):
@@ -320,9 +324,7 @@ if __name__ == '__main__':
 
     if use_cyk:
         import csv
-
         file_with_grammar = args_value.cnf_f
-
         print("parse grammar")
         grammar = parse_file_with_grammar(file_with_grammar)
         print("before grammar {} ".format(grammar))
@@ -338,4 +340,7 @@ if __name__ == '__main__':
 
             with open("%s.csv" % file_with_grammar, 'w') as f:
                 writer = csv.writer(f)
-                writer.writerows(table)
+                if table is None:
+                    print("epsilon word in grammar")
+                else:
+                    writer.writerows(table)
