@@ -23,7 +23,8 @@ int main(int argc, char* argv[])
     fseek(file, 0, SEEK_END);
     unsigned long len = (unsigned long)ftell(file);
     if (len == 0) { 
-        fclose(file);   
+        fclose(file); 
+        std::cout<<"file is empty"<<std::endl;  
         return 0;  
     }
     fclose(file);
