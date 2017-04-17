@@ -336,6 +336,6 @@ if __name__ == '__main__':
             res, table = cyk.fit()
             print("{} {}".format(words, res))
 
-            with open("result_table.csv", 'w') as f:
+            with open("%s.csv" % file_with_grammar, 'w') as f:
                 writer = csv.writer(f)
                 writer.writerows(table)
