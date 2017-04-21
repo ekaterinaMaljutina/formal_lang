@@ -257,15 +257,15 @@ class create_tree_node:
         self.word = word
 
     def __str__(self):
-        return str(self.non_terminal) + "\n" + self.word
+        return "{}  \n {}".format(str(self.non_terminal), self.word)
 
     def create_graph(self):
         if self.left is not None:
-            edge = pydot.Edge(self.__str__(), str(self.left))
+            edge = pydot.Edge(str(self), str(self.left))
             create_tree_node.graph.add_edge(edge)
             self.left.create_graph()
         if self.right is not None:
-            edge = pydot.Edge(self.__str__(), str(self.right))
+            edge = pydot.Edge(str(self), str(self.right))
             create_tree_node.graph.add_edge(edge)
             self.right.create_graph()
 
@@ -286,13 +286,16 @@ class CYK_with_tree:
         if len(self.words) == 0:
             return (grammar.get_start_symbol(), (grammar.eps_value,)) in grammar.get_rules(), \
                    None
-
+        depth = 0
         for i, word in enumerate(self.words):
             for idx, non_terminate in enumerate(self.non_terminate):
                 rule = (non_terminate, (term_str(value=word, terminate=True),))
                 if rule in grammar.get_rules():
-                    self.tree[i][i][idx] = create_tree_node(None, None, non_terminate, word)
+                    value = "{} _ {}".format(str(non_terminate), str(depth))
+                    self.tree[i][i][idx] = create_tree_node(None, None, value, word)
                     self.csv[i][i].append(non_terminate)
+
+                    depth += 1
 
         from itertools import product
         for k in range(1, self.size + 1):
@@ -306,8 +309,9 @@ class CYK_with_tree:
                                 tree_left = self.tree[i][j][self.index[item_1]]
                                 tree_right = self.tree[j + 1][i + k][self.index[item_2]]
 
+                                value = "{} _ {}".format(str(l), str(depth))
                                 self.tree[i][i + k][self.index[l]] = \
-                                    create_tree_node(None, None, l, tree_left.word
+                                    create_tree_node(None, None, value, tree_left.word
                                                      + tree_right.word)
 
                                 self.tree[i][i + k][self.index[l]].left = \
@@ -317,6 +321,8 @@ class CYK_with_tree:
                                     self.tree[j + 1][i + k][self.index[item_2]]
 
                                 self.csv[i][i + k].append(l)
+
+                                depth += 1
 
         return grammar.get_start_symbol() in self.csv[0][self.size - 1], \
                [[list(map(str, it)) for it in row] for row in self.csv], \
