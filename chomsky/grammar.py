@@ -1,3 +1,5 @@
+import pydot
+
 eps = "eps"
 
 
@@ -231,6 +233,96 @@ class Normal_form_Chomsky:
         self.__grammar__ = grammar_copy
 
 
+class Pair:
+    def __init__(self):
+        self.set = dict()
+
+    def get_key(self):
+        return self.set.keys()
+
+    def add(self, rule, tree):
+        self.set[rule] = tree
+
+    def get_tree(self, rule):
+        return self.set[rule]
+
+
+class create_tree_node:
+    graph = pydot.Dot(graph_type='digraph')
+
+    def __init__(self, left, right, non_terminal, word):
+        self.left = left
+        self.right = right
+        self.non_terminal = non_terminal
+        self.word = word
+
+    def __str__(self):
+        return str(self.non_terminal) + "\n" + self.word
+
+    def create_graph(self):
+        if self.left is not None:
+            edge = pydot.Edge(self.__str__(), str(self.left))
+            create_tree_node.graph.add_edge(edge)
+            self.left.create_graph()
+        if self.right is not None:
+            edge = pydot.Edge(self.__str__(), str(self.right))
+            create_tree_node.graph.add_edge(edge)
+            self.right.create_graph()
+
+
+class CYK_with_tree:
+    def __init__(self, grammar, words):
+        self.__grammar__ = grammar
+        self.words = words
+        self.size = len(words)
+        self.start = grammar.get_start_symbol()
+        self.non_terminate = list({l for (l, r) in grammar.get_rules()})
+        self.tree = [[[None for _ in range(len(self.non_terminate))]
+                      for _ in range(self.size)] for _ in range(self.size)]
+        self.csv = [[[] for _ in range(self.size)] for _ in range(self.size)]
+        self.index = {k: v for v, k in enumerate(self.non_terminate)}
+
+    def fit(self):
+        if len(self.words) == 0:
+            return (grammar.get_start_symbol(), (grammar.eps_value,)) in grammar.get_rules(), \
+                   None
+
+        for i, word in enumerate(self.words):
+            for idx, non_terminate in enumerate(self.non_terminate):
+                rule = (non_terminate, (term_str(value=word, terminate=True),))
+                if rule in grammar.get_rules():
+                    self.tree[i][i][idx] = create_tree_node(None, None, non_terminate, word)
+                    self.csv[i][i].append(non_terminate)
+
+        from itertools import product
+        for k in range(1, self.size + 1):
+            for i in range(self.size - k):
+                for j in range(i, i + k):
+                    for (item_1, item_2) in product(self.csv[i][j],
+                                                    self.csv[j + 1][i + k]):
+                        for l in self.non_terminate:
+                            currect_rule = (l, (item_1, item_2))
+                            if currect_rule in grammar.get_rules():
+                                tree_left = self.tree[i][j][self.index[item_1]]
+                                tree_right = self.tree[j + 1][i + k][self.index[item_2]]
+
+                                self.tree[i][i + k][self.index[l]] = \
+                                    create_tree_node(None, None, l, tree_left.word
+                                                     + tree_right.word)
+
+                                self.tree[i][i + k][self.index[l]].left = \
+                                    self.tree[i][j][self.index[item_1]]
+
+                                self.tree[i][i + k][self.index[l]].right = \
+                                    self.tree[j + 1][i + k][self.index[item_2]]
+
+                                self.csv[i][i + k].append(l)
+
+        return grammar.get_start_symbol() in self.csv[0][self.size - 1], \
+               [[list(map(str, it)) for it in row] for row in self.csv], \
+               self.tree[0][self.size - 1][self.index[grammar.get_start_symbol()]]
+
+
 class CYK:
     def __init__(self, grammar, words):
         self.__grammar__ = grammar
@@ -247,7 +339,7 @@ class CYK:
 
     def fit(self):
         if len(self.words) == 0:
-            return (grammar.get_start_symbol(), (grammar.eps_value,)) in grammar.get_rules(),\
+            return (grammar.get_start_symbol(), (grammar.eps_value,)) in grammar.get_rules(), \
                    None
 
         from itertools import product
@@ -304,8 +396,6 @@ if __name__ == '__main__':
     arguments.add_argument('-cyk', '--cyk', dest="cyk", help='Run cyk algo')
     arguments.add_argument('-w', '--words', dest="cyk_w", help='file with words')
     args_value = arguments.parse_args()
-    print(args_value.cnf)
-    print(args_value.cyk)
     use_cnf = False
     use_cyk = False
 
@@ -324,6 +414,7 @@ if __name__ == '__main__':
 
     if use_cyk:
         import csv
+
         file_with_grammar = args_value.cnf_f
         print("parse grammar")
         grammar = parse_file_with_grammar(file_with_grammar)
@@ -334,13 +425,15 @@ if __name__ == '__main__':
         file_with_words = args_value.cyk_w
         with open(file_with_words, 'r') as file_words:
             words = file_words.read().strip()
-            cyk = CYK(grammar=grammar, words=words)
-            res, table = cyk.fit()
-            print("{} {}".format(words, res))
-
-            with open("%s.csv" % file_with_words, 'w') as f:
-                writer = csv.writer(f)
-                if table is None:
-                    print("epsilon word in grammar")
-                else:
-                    writer.writerows(table)
+            cyl = CYK_with_tree(grammar=grammar, words=words)
+            res, table, tree = cyl.fit()
+            print(res)
+            if res is not None:
+                tree.create_graph()
+                create_tree_node.graph.write_png("%s.png" % file_with_words)
+                with open("%s.csv" % file_with_words, 'w') as f:
+                    writer = csv.writer(f)
+                    if table is None:
+                        print("epsilon word in grammar")
+                    else:
+                        writer.writerows(table)
