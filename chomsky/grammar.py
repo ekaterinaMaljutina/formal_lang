@@ -1,5 +1,3 @@
-import pydot
-
 eps = "eps"
 
 
@@ -248,6 +246,7 @@ class Pair:
 
 
 class create_tree_node:
+    import pydot
     graph = pydot.Dot(graph_type='digraph')
 
     def __init__(self, left, right, non_terminal, word):
@@ -260,6 +259,7 @@ class create_tree_node:
         return "{}  \n {}".format(str(self.non_terminal), self.word)
 
     def create_graph(self):
+        import pydot
         if self.left is not None:
             edge = pydot.Edge(str(self), str(self.left))
             create_tree_node.graph.add_edge(edge)
@@ -271,6 +271,7 @@ class create_tree_node:
 
 
 class CYK_with_tree:
+
     def __init__(self, grammar, words):
         self.__grammar__ = grammar
         self.words = words
