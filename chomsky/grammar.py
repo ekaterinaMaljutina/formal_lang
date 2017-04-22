@@ -435,7 +435,7 @@ if __name__ == '__main__':
             cyl = CYK_with_tree(grammar=grammar, words=words)
             res, table, tree = cyl.fit()
             print(res)
-            if res is not None:
+            if res is not None and res:
                 tree.create_graph()
                 create_tree_node.graph.write_png("%s.png" % file_with_words)
                 with open("%s.csv" % file_with_words, 'w') as f:
