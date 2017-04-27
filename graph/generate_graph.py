@@ -8,7 +8,7 @@ class get_new_name:
     @staticmethod
     def get():
         new_name = "X" + str(get_new_name.__current_name__)
-        new_value = term_str(value=new_name, terminate=False)
+        new_value = str(term_str(value=new_name, terminate=False))
         get_new_name.__current_name__ += 1
         return new_value
 

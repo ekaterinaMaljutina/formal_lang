@@ -10,16 +10,17 @@ class term_str:
         return self.__terminate__
 
     def get_str(self):
-        return "{} {}".format(self.__value__, self.__terminate__)
+        return self.__value__ + str(self.__terminate__)
 
     def __str__(self):
         return "'{}'".format(self.__value__) if self.__terminate__ else self.__value__
 
-    def __hash__(self):
-        return hash(self.get_str())
-
     def __eq__(self, other):
-        return self.get_str() == other.get_str()
+        return self.__value__ == other.__value__ \
+               and self.__terminate__ == other.__terminate__
+
+    def __hash__(self):
+        return hash(self.__value__) + self.__terminate__
 
 
 class grammar_save():
@@ -71,7 +72,7 @@ class Normal_form_Chomsky:
         return self.__grammar__
 
     def __get_new__(self):
-        new_name = "X" + str(self.__current_name__)
+        new_name = "x" + str(self.__current_name__)
         new_value = term_str(value=new_name, terminate=False)
         self.__current_name__ += 1
         return new_value
@@ -271,7 +272,6 @@ class create_tree_node:
 
 
 class CYK_with_tree:
-
     def __init__(self, grammar, words):
         self.__grammar__ = grammar
         self.words = words
