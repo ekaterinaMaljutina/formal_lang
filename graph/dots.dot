@@ -1,0 +1,10 @@
+digraph G {
+X0;
+X1;
+X2;
+X0 -> X1  [label=")"];
+X1 -> X1  [label="("];
+X2 -> X1  [label="("];
+X2 -> X1  [label=")"];
+X2 -> X0  [label="("];
+}
