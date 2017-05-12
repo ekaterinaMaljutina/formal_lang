@@ -68,15 +68,38 @@ def cyk(graph, grammar):
 
 
 def main():
-    alphabet = '()'
-    file_with_grammar = 'rna.txt'
+    import argparse as args
+
+    arguments = args.ArgumentParser(description='Chomsky programm')
+    arguments.add_argument('-alp', '--alp', dest="alp", help='Alphabet')
+    arguments.add_argument('-f', '--file', dest="file", help='file with grammar')
+    arguments.add_argument('-vertex_from', '--vertex_from', dest="vertex_from", help='Range vertex from')
+    arguments.add_argument('-vertex_to', '--vertex_to', dest="vertex_to", help='Range vertex to')
+
+    arguments.add_argument('-edge_from', '--edge_from', dest="edge_from", help='Range edge from')
+    arguments.add_argument('-edge_to', '--edge_to', dest="edge_to", help='Range edge to')
+
+    args_value = arguments.parse_args()
+
+    print(args_value)
+    if args_value.alp is None or args_value.edge_to is None or args_value.edge_from is None or \
+                    args_value.file is None or args_value.vertex_from is None or args_value.vertex_to is None:
+        arguments.print_help()
+        exit()
+
+    alphabet = args_value.alp
+    file_with_grammar = args_value.file
+    vertex_from, vertex_to = map(int, [args_value.vertex_from, args_value.vertex_to])
+    edge_from, edge_to = map(int, [args_value.edge_from, args_value.edge_to])
+
+    # file_with_grammar = 'rna.txt'
     # 'rna.txt'  # './simple_grammar'
     # graph = generate_rna_task()
     grammar = parse_file_with_grammar(file_with_grammar)
     grammar = Normal_form_Chomsky(grammar=grammar).get_cnf()
     print("current grammar {} ".format(grammar))
-    alphabet_rna = 'acgt'
-    graph = create_random_graph(alphabet_rna, [15, 20], [100, 150])
+    # alphabet_rna = 'acgt'
+    graph = create_random_graph(alphabet, [vertex_from, vertex_to], [edge_from, edge_to])
     # draw_graph(graph)
 
     res = cyk(graph=graph, grammar=grammar)

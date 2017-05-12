@@ -2,6 +2,7 @@ from generate_graph import create_random_graph
 import numpy as np
 import random
 
+
 alphabet = 'acgt'
 comlit_pair = ['ac', 'ca', 'gt', 'tg']
 
