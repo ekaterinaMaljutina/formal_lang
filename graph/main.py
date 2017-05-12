@@ -69,7 +69,6 @@ def cyk(graph, grammar):
 def main():
     def read_graph(graph_fname):
         with open(graph_fname) as file:
-            n = int(file.readline())
             vertex = set()
             graph = []
             for line in file:
@@ -78,7 +77,6 @@ def main():
                 vertex.add(vertex_1)
                 vertex.add(vertex_2)
                 graph.append((vertex_1, vertex_2, edge[2]))
-        print(vertex)
         return vertex, graph
 
     import argparse as args
