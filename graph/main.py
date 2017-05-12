@@ -52,7 +52,6 @@ def cyk(graph, grammar):
             vertex, _, _ = item
             start_vertex[vertex].append(item)
         flag = False
-        # print("vvvvv")
         for vertex_1_from, vertex_1_to, non_term_1 in result:
             for vertex_2_from, vertex_2_to, non_term_2 in start_vertex[vertex_1_to]:
                 for non_term in non_terms_to_non_terms[(non_term_1, non_term_2)]:
@@ -68,11 +67,28 @@ def cyk(graph, grammar):
 
 
 def main():
+    def read_graph(graph_fname):
+        with open(graph_fname) as file:
+            n = int(file.readline())
+            vertex = set()
+            graph = []
+            for line in file:
+                edge = line.split()
+                vertex_1, vertex_2 = map(int, edge[:2])
+                vertex.add(vertex_1)
+                vertex.add(vertex_2)
+                graph.append((vertex_1, vertex_2, edge[2]))
+        print(vertex)
+        return vertex, graph
+
     import argparse as args
 
     arguments = args.ArgumentParser(description='Chomsky programm')
     arguments.add_argument('-alp', '--alp', dest="alp", help='Alphabet')
     arguments.add_argument('-f', '--file', dest="file", help='file with grammar')
+
+    arguments.add_argument('-f_graph', '--file_graph', dest="file_graph", help='file with graph')
+
     arguments.add_argument('-vertex_from', '--vertex_from', dest="vertex_from", help='Range vertex from')
     arguments.add_argument('-vertex_to', '--vertex_to', dest="vertex_to", help='Range vertex to')
 
@@ -82,21 +98,29 @@ def main():
     args_value = arguments.parse_args()
 
     print(args_value)
-    if args_value.alp is None or args_value.edge_to is None or args_value.edge_from is None or \
-                    args_value.file is None or args_value.vertex_from is None or args_value.vertex_to is None:
+    if args_value.alp is None or args_value.file is None:
         arguments.print_help()
         exit()
 
     alphabet = args_value.alp
     file_with_grammar = args_value.file
-    vertex_from, vertex_to = map(int, [args_value.vertex_from, args_value.vertex_to])
-    edge_from, edge_to = map(int, [args_value.edge_from, args_value.edge_to])
 
+    if args_value.file_graph is None:
+        # random graph
+        if args_value.edge_to is None or args_value.edge_from is None \
+                or args_value.vertex_from is None or args_value.vertex_to is None:
+            arguments.print_help()
+            exit()
+
+        vertex_from, vertex_to = map(int, [args_value.vertex_from, args_value.vertex_to])
+        edge_from, edge_to = map(int, [args_value.edge_from, args_value.edge_to])
+        graph = create_random_graph(alphabet, [vertex_from, vertex_to], [edge_from, edge_to])
+    else:
+        graph = read_graph(args_value.file_graph)
     grammar = parse_file_with_grammar(file_with_grammar)
     grammar = Normal_form_Chomsky(grammar=grammar).get_cnf()
     print("current grammar {} ".format(grammar))
 
-    graph = create_random_graph(alphabet, [vertex_from, vertex_to], [edge_from, edge_to])
     # draw_graph(graph)
 
     res = cyk(graph=graph, grammar=grammar)
