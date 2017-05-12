@@ -92,13 +92,10 @@ def main():
     vertex_from, vertex_to = map(int, [args_value.vertex_from, args_value.vertex_to])
     edge_from, edge_to = map(int, [args_value.edge_from, args_value.edge_to])
 
-    # file_with_grammar = 'rna.txt'
-    # 'rna.txt'  # './simple_grammar'
-    # graph = generate_rna_task()
     grammar = parse_file_with_grammar(file_with_grammar)
     grammar = Normal_form_Chomsky(grammar=grammar).get_cnf()
     print("current grammar {} ".format(grammar))
-    # alphabet_rna = 'acgt'
+
     graph = create_random_graph(alphabet, [vertex_from, vertex_to], [edge_from, edge_to])
     # draw_graph(graph)
 
