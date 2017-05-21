@@ -73,6 +73,7 @@ def main():
             graph = []
             for line in file:
                 edge = line.split()
+                # print(edge)
                 vertex_1, vertex_2 = map(int, edge[:2])
                 vertex.add(vertex_1)
                 vertex.add(vertex_2)
@@ -114,6 +115,7 @@ def main():
         edge_from, edge_to = map(int, [args_value.edge_from, args_value.edge_to])
         graph = create_random_graph(alphabet, [vertex_from, vertex_to], [edge_from, edge_to])
     else:
+        print("read graph from file")
         graph = read_graph(args_value.file_graph)
     grammar = parse_file_with_grammar(file_with_grammar)
     grammar = Normal_form_Chomsky(grammar=grammar).get_cnf()

@@ -28,10 +28,14 @@ def create_random_graph(alphabet, size_vertex=[3, 4], size_edge=[5, 5]):
         edge = random.choice(alphabet)
         edges_list.append((vertex_1, vertex_2, edge))
 
+    # save_graph(edges_list, './graph_test/500_rna')
     return vertex_list, edges_list
 
 
-    # a = 'abc'
-    # vertex, edge = create_random_graph(a)
-    # vertex = [str(value) for value in vertex]
-    # print(vertex)
+def save_graph(edges_list, filename):
+    with open(filename, 'w') as f:
+        for vertex_1, vertex_2, edge in edges_list:
+            f.write("{} {} {} \n".format(vertex_1[1:], vertex_2[1:], edge))
+
+
+# create_random_graph('acgt', [70, 75], [500, 510])
